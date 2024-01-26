@@ -3,29 +3,36 @@ import googleLogo from "../assets/google.png";
 const Auth = () => {
   return (
     <div className="h-[100vh] bg-zinc-800 grid place-items-center">
-      <div className="bg-black text-white flex flex-col gap-10 py-16">
-        <div>
+      <div className="bg-black text-white flex flex-col gap-10 py-16 px-32 rounded-lg">
+        <div className="flex justify-center">
           <img className="h-[60px]" src="../public/logo.png" alt="" />
         </div>
-        <h1> Sign In Twitter</h1>
+        <h1 className="text-center font-bold text-xl "> Sign In Twitter</h1>
 
-        <div>
+        <div className="flex items-center gap-3 bg-white text-black py-2 px-10 rounded-full cursor-pointer hover:bg-gray-200 ">
           <img className="h-[20px]" src={googleLogo} alt="" />
-          <p>Sign in with Google</p>
+          <p className="whitespace-nowrap">Sign in with Google</p>
         </div>
 
-        <form action="">
+        <form className="flex flex-col">
           <label htmlFor="">Email</label>
-          <input type="email" />
+          <input className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]" />
 
-          <label htmlFor="">Password</label>
-          <input type="password" />
+          <label className="mt-5">Password</label>
+          <input className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]" />
 
-          <button>Sign In</button>
+          <button
+            className="bg-white transition text-black mt-10 rounded-full p-1 font-bold hover:bg-gray-200"
+            type="submit"
+          >
+            Sign In
+          </button>
 
-          <p>
-            <span>Don't have account</span>
-            <button>Sign Up</button>
+          <p className="text-gray-500 mt-5">
+            <span>Don't have an account?</span>
+            <button className="mx-3 text-blue-500" type="button">
+              Sign Up
+            </button>
           </p>
         </form>
       </div>
