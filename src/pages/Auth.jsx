@@ -1,6 +1,9 @@
+import { useState } from "react";
 import googleLogo from "../assets/google.png";
 
 const Auth = () => {
+  const [signUp, setSignUp] = useState(false);
+
   return (
     <div className="h-[100vh] bg-zinc-800 grid place-items-center">
       <div className="bg-black text-white flex flex-col gap-10 py-16 px-32 rounded-lg">
@@ -25,13 +28,17 @@ const Auth = () => {
             className="bg-white transition text-black mt-10 rounded-full p-1 font-bold hover:bg-gray-200"
             type="submit"
           >
-            Sign In
+            {signUp ? "Sign Up" : "Sign In"}
           </button>
 
           <p className="text-gray-500 mt-5">
             <span>Don't have an account?</span>
-            <button className="mx-3 text-blue-500" type="button">
-              Sign Up
+            <button
+              onClick={() => setSignUp(!signUp)}
+              className="mx-3 text-blue-500"
+              type="button"
+            >
+              {signUp ? "Sign In" : "Sign Up"}
             </button>
           </p>
         </form>
