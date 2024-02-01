@@ -1,9 +1,32 @@
 import { useState } from "react";
 import googleLogo from "../assets/google.png";
+import { auth } from "../firebase/config";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const Auth = () => {
   const [signUp, setSignUp] = useState(false);
+  const [email, SetEmail] = useState("");
+  const [error, setIsError] = useState(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const email = e.target[0].value;
+    const password = e.target[1].value;
 
+    if (signUp) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((res) => console.log(res))
+        .catch((err) => alert(err.code));
+    } else {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((res) => console.log(res))
+        .catch((err) => alert(err.code));
+    }
+  };
+
+  const handleReset = () => {};
   return (
     <div className="h-[100vh] bg-zinc-800 grid place-items-center">
       <div className="bg-black text-white flex flex-col gap-10 py-16 px-32 rounded-lg">
@@ -17,9 +40,12 @@ const Auth = () => {
           <p className="whitespace-nowrap">Sign in with Google</p>
         </div>
 
-        <form className="flex flex-col">
+        <form onSubmit={handleSubmit} className="flex flex-col">
           <label htmlFor="">Email</label>
-          <input className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]" />
+          <input
+            onChange={(e) => SetEmail(e.target.value)}
+            className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]"
+          />
 
           <label className="mt-5">Password</label>
           <input className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]" />
@@ -41,6 +67,9 @@ const Auth = () => {
               {signUp ? "Sign In" : "Sign Up"}
             </button>
           </p>
+          {!signUp && (
+            <button onClick={handleReset}>Forget Your Password?</button>
+          )}
         </form>
       </div>
     </div>
