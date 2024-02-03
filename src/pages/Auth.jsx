@@ -3,13 +3,16 @@ import googleLogo from "../assets/google.png";
 import { auth } from "../firebase/config";
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
   const [signUp, setSignUp] = useState(false);
-  const [email, SetEmail] = useState("");
-  const [error, setIsError] = useState(null);
+  const [email, setEmail] = useState("");
+  const [isError, setIsError] = useState(null);
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
     const email = e.target[0].value;
@@ -17,16 +20,28 @@ const Auth = () => {
 
     if (signUp) {
       createUserWithEmailAndPassword(auth, email, password)
-        .then((res) => console.log(res))
+        .then(() => navigate("/home"))
         .catch((err) => alert(err.code));
     } else {
       signInWithEmailAndPassword(auth, email, password)
-        .then((res) => console.log(res))
-        .catch((err) => alert(err.code));
+        .then(() => navigate("/home"))
+        .catch((err) => {
+          alert(err.code);
+          if (
+            err.code == "auth/wrong-password" ||
+            err.code == "auth/invalid-credential"
+          ) {
+            setIsError(true);
+          }
+        });
     }
   };
 
-  const handleReset = () => {};
+  const handleReset = () => {
+    sendEmailVerification(auth, email)
+      .then(() => alert("check your email"))
+      .catch((err) => alert(err.code));
+  };
   return (
     <div className="h-[100vh] bg-zinc-800 grid place-items-center">
       <div className="bg-black text-white flex flex-col gap-10 py-16 px-32 rounded-lg">
@@ -43,12 +58,16 @@ const Auth = () => {
         <form onSubmit={handleSubmit} className="flex flex-col">
           <label htmlFor="">Email</label>
           <input
-            onChange={(e) => SetEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
             className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]"
           />
 
           <label className="mt-5">Password</label>
-          <input className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]" />
+          <input
+            type="password"
+            className="text-black rounded p-2 shadow-lg outline focus:shadow-[#ffffff48]"
+          />
 
           <button
             className="bg-white transition text-black mt-10 rounded-full p-1 font-bold hover:bg-gray-200"
@@ -67,8 +86,14 @@ const Auth = () => {
               {signUp ? "Sign In" : "Sign Up"}
             </button>
           </p>
-          {!signUp && (
-            <button onClick={handleReset}>Forget Your Password?</button>
+          {!signUp && isError && (
+            <button
+              type="button"
+              className="text-red-400 mt-5 "
+              onClick={handleReset}
+            >
+              Forget Your Password?
+            </button>
           )}
         </form>
       </div>
