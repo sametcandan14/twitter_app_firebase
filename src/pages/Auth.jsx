@@ -1,10 +1,11 @@
 import { useState } from "react";
 import googleLogo from "../assets/google.png";
-import { auth } from "../firebase/config";
+import { auth, provider } from "../firebase/config";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithRedirect,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -13,27 +14,26 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [isError, setIsError] = useState(null);
   const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const email = e.target[0].value;
     const password = e.target[1].value;
 
     if (signUp) {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => navigate("/home"))
-        .catch((err) => alert(err.code));
+      createUserWithEmailAndPassword(auth, email, password).catch((err) =>
+        alert(err.code)
+      );
     } else {
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => navigate("/home"))
-        .catch((err) => {
-          alert(err.code);
-          if (
-            err.code == "auth/wrong-password" ||
-            err.code == "auth/invalid-credential"
-          ) {
-            setIsError(true);
-          }
-        });
+      signInWithEmailAndPassword(auth, email, password).catch((err) => {
+        alert(err.code);
+        if (
+          err.code == "auth/wrong-password" ||
+          err.code == "auth/invalid-credential"
+        ) {
+          setIsError(true);
+        }
+      });
     }
   };
 
@@ -42,15 +42,23 @@ const Auth = () => {
       .then(() => alert("check your email"))
       .catch((err) => alert(err.code));
   };
+
+  const handleGoogle = () => {
+    signInWithRedirect(auth, provider).catch((err) => alert(err.code));
+  };
+
   return (
     <div className="h-[100vh] bg-zinc-800 grid place-items-center">
       <div className="bg-black text-white flex flex-col gap-10 py-16 px-32 rounded-lg">
         <div className="flex justify-center">
-          <img className="h-[60px]" src="../public/logo.png" alt="" />
+          <img className="h-[60px]" src="../logo.png" alt="" />
         </div>
         <h1 className="text-center font-bold text-xl "> Sign In Twitter</h1>
 
-        <div className="flex items-center gap-3 bg-white text-black py-2 px-10 rounded-full cursor-pointer hover:bg-gray-200 ">
+        <div
+          onClick={handleGoogle}
+          className="flex items-center gap-3 bg-white text-black py-2 px-10 rounded-full cursor-pointer hover:bg-gray-200 "
+        >
           <img className="h-[20px]" src={googleLogo} alt="" />
           <p className="whitespace-nowrap">Sign in with Google</p>
         </div>
