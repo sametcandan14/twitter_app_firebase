@@ -7,13 +7,13 @@ import {
   signInWithEmailAndPassword,
   signInWithRedirect,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+
+import { toast } from "react-toastify";
 
 const Auth = () => {
   const [signUp, setSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [isError, setIsError] = useState(null);
-  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,11 +22,11 @@ const Auth = () => {
 
     if (signUp) {
       createUserWithEmailAndPassword(auth, email, password).catch((err) =>
-        alert(err.code)
+        toast.error(err.code)
       );
     } else {
       signInWithEmailAndPassword(auth, email, password).catch((err) => {
-        alert(err.code);
+        toast.error(err.code);
         if (
           err.code == "auth/wrong-password" ||
           err.code == "auth/invalid-credential"
@@ -39,12 +39,12 @@ const Auth = () => {
 
   const handleReset = () => {
     sendEmailVerification(auth, email)
-      .then(() => alert("check your email"))
-      .catch((err) => alert(err.code));
+      .then(() => toast.info("check your email"))
+      .catch((err) => toast.error(err.code));
   };
 
   const handleGoogle = () => {
-    signInWithRedirect(auth, provider).catch((err) => alert(err.code));
+    signInWithRedirect(auth, provider).catch((err) => toast.error(err.code));
   };
 
   return (

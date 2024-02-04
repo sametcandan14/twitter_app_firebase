@@ -1,16 +1,15 @@
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase/config";
-import { useNavigate } from "react-router-dom";
+import Nav from "../components/Nav";
+import Aside from "../components/Aside";
+import Main from "../components/Main";
 
 const Feed = () => {
-  const navigate = useNavigate();
-  const handleClick = () => {
-    signOut(auth).then(() => navigate("/"));
-  };
   return (
-    <div>
-      <h1>Home</h1>
-      <button onClick={handleClick}> Sign Out</button>
+    <div className="bg-black text-white min-h-[100vh] overflow-y-hidden ">
+      <div className="grid grid-cols-3 ">
+        <Nav />
+        <Main />
+        <Aside />
+      </div>
     </div>
   );
 };
