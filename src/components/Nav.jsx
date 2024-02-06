@@ -21,7 +21,7 @@ const Nav = () => {
       <div className="flex flex-wrap items-center gap-2 mb-4 p-2">
         <img
           src={
-            auth.currentUser.photoURL
+            auth?.currentUser?.photoURL
               ? auth.currentUser.photoURL
               : defaultProfile
           }
