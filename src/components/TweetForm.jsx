@@ -1,10 +1,29 @@
-import { auth } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 import defaultProfile from "../assets/default.png";
 import { BsCardImage } from "react-icons/bs";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const TweetForm = () => {
+  const tweetsCol = collection(db, "tweets");
   const handleSubmit = (e) => {
     e.preventDefault();
+    const textContent = e.target[0].value;
+    const imageContent = e.target[1].files;
+
+    e.target[0].value = "";
+
+    addDoc(tweetsCol, {
+      textContent,
+      createdAt: serverTimestamp(),
+      user: {
+        id: auth.currentUser.uid,
+        name: auth.currentUser.displayName,
+        picture: auth.currentUser.photoURL
+          ? auth.currentUser.photoURL
+          : defaultProfile,
+      },
+      likes: [],
+    });
   };
   return (
     <form
