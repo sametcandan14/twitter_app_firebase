@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TweetForm from "./TweetForm";
-import { onSnapshot, collection } from "firebase/firestore";
+import { onSnapshot, collection, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase/config";
 import Post from "./Post";
 
@@ -8,7 +8,8 @@ const Main = () => {
   const [tweets, setTweets] = useState(null);
   const tweetsCol = collection(db, "tweets");
   useEffect(() => {
-    onSnapshot(tweetsCol, (snapshot) => {
+    const queryOptions = query(tweetsCol, orderBy("createdAt", "desc"));
+    onSnapshot(queryOptions, (snapshot) => {
       const liveTweets = [];
       snapshot.forEach((doc) => liveTweets.push({ ...doc.data(), id: doc.id }));
       setTweets(liveTweets);
@@ -20,9 +21,7 @@ const Main = () => {
         Home
       </header>
       <TweetForm />
-      <div className="text-center mt-[200px] ">
-        {!tweets && <p>Loading...</p>}
-      </div>
+      {!tweets && <p className="text-center mt-[200px] ">Loading...</p>}
 
       <div>
         {tweets?.map((tweet) => (
