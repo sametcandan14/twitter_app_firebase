@@ -8,7 +8,7 @@ const Feed = () => {
       <div className="grid grid-cols-5 ">
         <Nav />
         <Main />
-        <Aside />
+        {/* <Aside /> */}
       </div>
     </div>
   );

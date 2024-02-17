@@ -4,12 +4,21 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { FcLike } from "react-icons/fc";
 import { FaRetweet } from "react-icons/fa";
 import { FiShare2 } from "react-icons/fi";
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { auth, db } from "../firebase/config";
 import { useEffect, useState } from "react";
+import moment from "moment";
 
 const Post = ({ tweet }) => {
   const [isLiked, setIsLiked] = useState(false);
+
+  const date = tweet.createdAt?.toDate();
   useEffect(() => {
     const found = tweet.likes.find((userId) => userId === auth.currentUser.uid);
 
@@ -25,6 +34,11 @@ const Post = ({ tweet }) => {
         : arrayUnion(auth.currentUser.uid),
     });
   };
+
+  const handleDelete = () => {
+    const tweetRef = doc(db, "tweets", tweet.id);
+    deleteDoc(tweetRef);
+  };
   return (
     <div className="flex gap-3 p-3 border-b-[0.5px] border-gray-600">
       <div>
@@ -35,14 +49,20 @@ const Post = ({ tweet }) => {
           <div className="flex items-center gap-3">
             <p className="font-bold">{tweet?.user?.name}</p>
             <p className="text-gray-400">@{tweet?.user?.name?.toLowerCase()}</p>
-            <p className="text-gray-400">1 saat önce</p>
+            <p className="text-gray-400">{moment(date).fromNow()}</p>
           </div>
-          <div className="p-2 rounded-full transition cursor-pointer hover:bg-gray-700">
-            <BsThreeDots />
-          </div>
+          {tweet.user.id === auth.currentUser.uid && (
+            <div
+              onClick={handleDelete}
+              className="p-2 rounded-full transition cursor-pointer hover:bg-gray-700"
+            >
+              {<BsThreeDots />}
+            </div>
+          )}
         </div>
         <div className="my-3">
           <p>{tweet.textContent}</p>
+          {tweet.imageContent && <img src={tweet.imageContent} />}
         </div>
         <div className="flex justify-between">
           <div className="p-2 rounded-full transition cursor-pointer hover:bg-gray-700">

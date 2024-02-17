@@ -2,18 +2,39 @@ import { auth, db } from "../firebase/config";
 import defaultProfile from "../assets/default.png";
 import { BsCardImage } from "react-icons/bs";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/config";
+import { toast } from "react-toastify";
 
 const TweetForm = () => {
   const tweetsCol = collection(db, "tweets");
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const textContent = e.target[0].value;
-    const imageContent = e.target[1].files;
 
-    e.target[0].value = "";
+  const upLoadImage = async (image) => {
+    if (!image) return null;
+
+    const storageRef = ref(storage, `${new Date().getTime()}${image.name}`);
+
+    const url = await uploadBytes(storageRef, image).then((response) =>
+      getDownloadURL(response.ref)
+    );
+
+    return url;
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const textContent = e.target[0].value;
+    const imageContent = e.target[1].files[0];
+
+    if (!textContent) {
+      toast.info("Add tweet content");
+      return;
+    }
+    const url = await upLoadImage(imageContent);
 
     addDoc(tweetsCol, {
       textContent,
+      imageContent: url,
       createdAt: serverTimestamp(),
       user: {
         id: auth.currentUser.uid,
@@ -24,6 +45,9 @@ const TweetForm = () => {
       },
       likes: [],
     });
+
+    e.target[0].value = "";
+    e.target[1].value = null;
   };
   return (
     <form
